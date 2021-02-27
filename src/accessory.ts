@@ -48,9 +48,11 @@ class ExampleSwitch implements AccessoryPlugin {
     private readonly log: Logging;
     private readonly name: string;
     private switchOn = false;
+    private lightbulbOn = false;
 
     private readonly switchService: Service;
     private readonly informationService: Service;
+    private readonly lightbulbService: Service;
 
     constructor(log: Logging, config: AccessoryConfig, api: API) {
         this.log = log;
@@ -65,6 +67,18 @@ class ExampleSwitch implements AccessoryPlugin {
         .on(CharacteristicEventTypes.SET, (value: CharacteristicValue, callback: CharacteristicSetCallback) => {
             this.switchOn = value as boolean;
             log.info("Switch state was set to: " + (this.switchOn? "ON": "OFF"));
+            callback();
+        });
+        
+        this.lightbulbService = new hap.Service.Lightbulb(this.name);
+        this.lightbulbService.getCharacteristic(hap.Characteristic.On)
+        .on(CharacteristicEventTypes.GET, (callback: CharacteristicGetCallback) => {
+            log.info("Current state of the lightbulb was returned: " + (this.lightbulbOn? "ON": "OFF"));
+            callback(undefined, this.lightbulbOn);
+        })
+        .on(CharacteristicEventTypes.SET, (value: CharacteristicValue, callback: CharacteristicSetCallback) => {
+            this.lightbulbOn = value as boolean;
+            log.info("Switch state was set to: " + (this.lightbulbOn? "ON": "OFF"));
             callback();
         });
 
@@ -91,6 +105,7 @@ class ExampleSwitch implements AccessoryPlugin {
         return [
         this.informationService,
         this.switchService,
+        this.lightbulbService,
         ];
     }
 
