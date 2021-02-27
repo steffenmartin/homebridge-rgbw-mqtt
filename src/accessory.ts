@@ -49,6 +49,7 @@ class ExampleSwitch implements AccessoryPlugin {
     private readonly name: string;
     private switchOn = false;
     private lightbulbOn = false;
+    private lightbulbBrightness = 0;
 
     private readonly switchService: Service;
     private readonly informationService: Service;
@@ -70,7 +71,12 @@ class ExampleSwitch implements AccessoryPlugin {
             callback();
         });
         
+        // Adding lightbulb service
+        
         this.lightbulbService = new hap.Service.Lightbulb(this.name);
+        
+        // Lightbulb On/Off callbacks
+        
         this.lightbulbService.getCharacteristic(hap.Characteristic.On)
         .on(CharacteristicEventTypes.GET, (callback: CharacteristicGetCallback) => {
             log.info("Current state of the lightbulb was returned: " + (this.lightbulbOn? "ON": "OFF"));
@@ -78,7 +84,20 @@ class ExampleSwitch implements AccessoryPlugin {
         })
         .on(CharacteristicEventTypes.SET, (value: CharacteristicValue, callback: CharacteristicSetCallback) => {
             this.lightbulbOn = value as boolean;
-            log.info("Switch state was set to: " + (this.lightbulbOn? "ON": "OFF"));
+            log.info("Lightbulb state was set to: " + (this.lightbulbOn? "ON": "OFF"));
+            callback();
+        });
+        
+        // Lightbulb brightness callbacks
+        
+        this.lightbulbService.getCharacteristic(hap.Characteristic.Brightness)
+        .on(CharacteristicEventTypes.GET, (callback: CharacteristicGetCallback) => {
+            log.info("Current brightness of the lightbulb was returned: " + this.lightbulbBrightness);
+            callback(undefined, this.lightbulbBrightness);
+        })
+        .on(CharacteristicEventTypes.SET, (value: CharacteristicValue, callback: CharacteristicSetCallback) => {
+            this.lightbulbBrightness = value as number;
+            log.info("Lightbulb brightness was set to: " + this.lightbulbBrightness);
             callback();
         });
 
