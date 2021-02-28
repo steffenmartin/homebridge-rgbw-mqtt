@@ -50,6 +50,7 @@ class ExampleSwitch implements AccessoryPlugin {
     private switchOn = false;
     private lightbulbOn = false;
     private lightbulbBrightness = 0;
+    private lightbulbColorTemp = 153;
 
     private readonly switchService: Service;
     private readonly informationService: Service;
@@ -98,6 +99,19 @@ class ExampleSwitch implements AccessoryPlugin {
         .on(CharacteristicEventTypes.SET, (value: CharacteristicValue, callback: CharacteristicSetCallback) => {
             this.lightbulbBrightness = value as number;
             log.info("Lightbulb brightness was set to: " + this.lightbulbBrightness);
+            callback();
+        });
+        
+        // Lightbulb color temperature callbacks
+        
+        this.lightbulbService.getCharacteristic(hap.Characteristic.ColorTemperature)
+        .on(CharacteristicEventTypes.GET, (callback: CharacteristicGetCallback) => {
+            log.info("Current color temperature of the lightbulb was returned: " + this.lightbulbColorTemp);
+            callback(undefined, this.lightbulbColorTemp);
+        })
+        .on(CharacteristicEventTypes.SET, (value: CharacteristicValue, callback: CharacteristicSetCallback) => {
+            this.lightbulbColorTemp = value as number;
+            log.info("Lightbulb color temperature was set to: " + this.lightbulbColorTemp);
             callback();
         });
 
