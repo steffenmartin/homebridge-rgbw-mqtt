@@ -11,6 +11,10 @@ import {
     Service
 } from "homebridge";
 
+import { 
+    connect
+} from "mqtt";
+
 /*
  * IMPORTANT NOTICE
  *
@@ -47,6 +51,8 @@ class ExampleSwitch implements AccessoryPlugin {
 
     private readonly log: Logging;
     private readonly name: string;
+    private readonly mqttURL: string;
+    private readonly mqttClientID: string;
     private switchOn = false;
     private lightbulbOn = false;
     private lightbulbBrightness = 0;
@@ -59,6 +65,18 @@ class ExampleSwitch implements AccessoryPlugin {
     constructor(log: Logging, config: AccessoryConfig, api: API) {
         this.log = log;
         this.name = config.name;
+
+        // this.mqttURL = config.mqttURL;
+        this.mqttURL = "http://192.168.1.8";
+        this.mqttClientID = 'mqttjs_' + Math.random().toString(16).substr(2, 8);
+        
+        // connect to MQTT broker
+        this.client = mqtt.connect(this.mqttURL);
+        // this.client = mqtt.connect(this.mqttURL, this.options);
+        var that = this;
+        this.client.on('error', function (err) {
+            that.log('Error event on MQTT:', err);
+        });
 
         this.switchService = new hap.Service.Switch(this.name);
         this.switchService.getCharacteristic(hap.Characteristic.On)
