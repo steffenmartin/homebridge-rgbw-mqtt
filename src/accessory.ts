@@ -11,7 +11,8 @@ import {
     Service
 } from "homebridge";
 
-import { 
+import {
+    Client,
     connect
 } from "mqtt";
 
@@ -51,6 +52,7 @@ class ExampleSwitch implements AccessoryPlugin {
 
     private readonly log: Logging;
     private readonly name: string;
+    private readonly client: Client;
     private readonly mqttURL: string;
     private readonly mqttClientID: string;
     private switchOn = false;
@@ -71,7 +73,7 @@ class ExampleSwitch implements AccessoryPlugin {
         this.mqttClientID = 'mqttjs_' + Math.random().toString(16).substr(2, 8);
         
         // connect to MQTT broker
-        this.client = mqtt.connect(this.mqttURL);
+        this.client = connect(this.mqttURL);
         // this.client = mqtt.connect(this.mqttURL, this.options);
         var that = this;
         this.client.on('error', function (err) {
