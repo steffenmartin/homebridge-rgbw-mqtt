@@ -73,14 +73,27 @@ class ExampleSwitch implements AccessoryPlugin {
             'mqttjs_' +
             config.name + "_" +
             Math.random().toString(16).substr(2, 8);
-        
+
         // connect to MQTT broker
+
         this.mqttClient = connect(this.mqttURL);
-        // this.mqttClient = mqtt.connect(this.mqttURL, this.options);
         var that = this;
         this.mqttClient.on('error', function (err) {
             that.log('Error event on MQTT:', err);
         });
+
+        this.mqttClient.on('message', function (topic, message) {
+
+            that.log(message.toString(), topic);
+
+            if (topic == that.config.topics.getOn) {
+                var status = message.toString();
+                that.switchOn = (status == "ON" ? true : false);
+                that.switchService.getCharacteristic(hap.Characteristic.On).setValue(that.switchOn, undefined, 'fromSetValue');
+            }
+        });
+        
+        this.mqttClient.subscribe(this.config.topics.getOn);
 
         this.switchService = new hap.Service.Switch(this.name);
         this.switchService.getCharacteristic(hap.Characteristic.On)
@@ -93,13 +106,13 @@ class ExampleSwitch implements AccessoryPlugin {
             log.info("Switch state was set to: " + (this.switchOn? "ON": "OFF"));
             callback();
         });
-        
+
         // Adding lightbulb service
-        
+
         this.lightbulbService = new hap.Service.Lightbulb(this.name);
-        
+
         // Lightbulb On/Off callbacks
-        
+
         this.lightbulbService.getCharacteristic(hap.Characteristic.On)
         .on(CharacteristicEventTypes.GET, (callback: CharacteristicGetCallback) => {
             log.info("Current state of the lightbulb was returned: " + (this.lightbulbOn? "ON": "OFF"));
@@ -110,9 +123,9 @@ class ExampleSwitch implements AccessoryPlugin {
             log.info("Lightbulb state was set to: " + (this.lightbulbOn? "ON": "OFF"));
             callback();
         });
-        
+
         // Lightbulb brightness callbacks
-        
+
         this.lightbulbService.getCharacteristic(hap.Characteristic.Brightness)
         .on(CharacteristicEventTypes.GET, (callback: CharacteristicGetCallback) => {
             log.info("Current brightness of the lightbulb was returned: " + this.lightbulbBrightness);
@@ -123,9 +136,9 @@ class ExampleSwitch implements AccessoryPlugin {
             log.info("Lightbulb brightness was set to: " + this.lightbulbBrightness);
             callback();
         });
-        
+
         // Lightbulb color temperature callbacks
-        
+
         this.lightbulbService.getCharacteristic(hap.Characteristic.ColorTemperature)
         .on(CharacteristicEventTypes.GET, (callback: CharacteristicGetCallback) => {
             log.info("Current color temperature of the lightbulb was returned: " + this.lightbulbColorTemp);
