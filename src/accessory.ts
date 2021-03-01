@@ -51,6 +51,7 @@ export = (api: API) => {
 class ExampleSwitch implements AccessoryPlugin {
 
     private readonly log: Logging;
+    private readonly config: AccessoryConfig;
     private readonly name: string;
     private readonly mqttClient: Client;
     private readonly mqttURL: string;
@@ -66,6 +67,7 @@ class ExampleSwitch implements AccessoryPlugin {
 
     constructor(log: Logging, config: AccessoryConfig, api: API) {
         this.log = log;
+        this.config = config;
         this.name = config.name;
 
         this.mqttURL = config.mqttURL;
