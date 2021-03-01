@@ -1,0 +1,13 @@
+{
+    "description": "This is an example configuration file. You can use this as a template for creating your own configuration file.",
+    "accessories": [
+        "accessory": "ExampleSwitch",
+        "name": "Example Switch",
+        "url": "<url of broker>",
+        "topics":
+        {
+            "getOn": "<topic to get the status>",
+            "setOn": "<topic to set the status>"
+        }
+    ]
+}

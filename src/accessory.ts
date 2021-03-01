@@ -52,7 +52,7 @@ class ExampleSwitch implements AccessoryPlugin {
 
     private readonly log: Logging;
     private readonly name: string;
-    private readonly client: Client;
+    private readonly mqttClient: Client;
     private readonly mqttURL: string;
     private readonly mqttClientID: string;
     private switchOn = false;
@@ -68,15 +68,17 @@ class ExampleSwitch implements AccessoryPlugin {
         this.log = log;
         this.name = config.name;
 
-        // this.mqttURL = config.mqttURL;
-        this.mqttURL = "http://192.168.1.8";
-        this.mqttClientID = 'mqttjs_' + Math.random().toString(16).substr(2, 8);
+        this.mqttURL = config.mqttURL;
+        this.mqttClientID =
+            'mqttjs_' +
+            config.name + "_" +
+            Math.random().toString(16).substr(2, 8);
         
         // connect to MQTT broker
-        this.client = connect(this.mqttURL);
-        // this.client = mqtt.connect(this.mqttURL, this.options);
+        this.mqttClient = connect(this.mqttURL);
+        // this.mqttClient = mqtt.connect(this.mqttURL, this.options);
         var that = this;
-        this.client.on('error', function (err) {
+        this.mqttClient.on('error', function (err) {
             that.log('Error event on MQTT:', err);
         });
 
