@@ -78,6 +78,8 @@ class ExampleSwitch implements AccessoryPlugin {
 
         // connect to MQTT broker
 
+        log.info("Initializing MQTT");
+
         this.mqttClient = connect(this.mqttURL);
         var that = this;
         this.mqttClient.on('error', function (err) {
