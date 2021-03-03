@@ -81,12 +81,12 @@ class ExampleSwitch implements AccessoryPlugin {
         this.mqttClient = connect(this.mqttURL);
         var that = this;
         this.mqttClient.on('error', function (err) {
-            that.log('Error event on MQTT:', err);
+            that.log.error('Error event on MQTT:', err);
         });
 
         this.mqttClient.on('message', function (topic, message) {
 
-            that.log(message.toString(), topic);
+            that.log.info(message.toString(), topic);
 
             if (topic == that.config.topics.getOn) {
                 var status = message.toString();
