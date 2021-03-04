@@ -70,7 +70,7 @@ class ExampleSwitch implements AccessoryPlugin {
         this.config = config;
         this.name = config.name;
 
-        this.mqttURL = config.mqttURL;
+        this.mqttURL = config.url;
         this.mqttClientID =
             'mqttjs_' +
             config.name + "_" +
@@ -79,6 +79,7 @@ class ExampleSwitch implements AccessoryPlugin {
         // connect to MQTT broker
 
         log.info("Initializing MQTT");
+        log.info("Connecting to " + this.mqttURL);
 
         this.mqttClient = connect(this.mqttURL);
         var that = this;
@@ -97,6 +98,8 @@ class ExampleSwitch implements AccessoryPlugin {
             }
         });
         
+        log.info("Subscribing to topic " + this.config.topics.getOn );
+
         this.mqttClient.subscribe(this.config.topics.getOn);
 
         this.switchService = new hap.Service.Switch(this.name);
