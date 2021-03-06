@@ -166,7 +166,6 @@ class ExampleSwitch implements AccessoryPlugin {
     getServices(): Service[] {
         return [
         this.informationService,
-        this.switchService,
         this.lightbulbService,
         ];
     }
