@@ -92,7 +92,7 @@ class ExampleSwitch implements AccessoryPlugin {
             if (topic == that.config.topics.getOn) {
                 var status = message.toString();
                 that.lightbulbOn = (status == "ON" ? true : false);
-                // that.lightbulbService.getCharacteristic(hap.Characteristic.On).setValue(that.lightbulbOn, undefined, 'fromSetValue');
+                that.lightbulbService.getCharacteristic(hap.Characteristic.On).setValue(that.lightbulbOn, undefined, 'fromSetValue');
             }
         });
         
@@ -111,9 +111,11 @@ class ExampleSwitch implements AccessoryPlugin {
             log.info("Current state of the lightbulb was returned: " + (this.lightbulbOn? "ON": "OFF"));
             callback(undefined, this.lightbulbOn);
         })
-        .on(CharacteristicEventTypes.SET, (value: CharacteristicValue, callback: CharacteristicSetCallback) => {
-            this.lightbulbOn = value as boolean;
-            this.mqttClient.publish(this.config.topics.setOn, this.lightbulbOn? "ON": "OFF");
+        .on(CharacteristicEventTypes.SET, (value: CharacteristicValue, callback: CharacteristicSetCallback, context: string) => {
+            if(context !== 'fromSetValue') {
+                this.lightbulbOn = value as boolean;
+                this.mqttClient.publish(this.config.topics.setOn, this.lightbulbOn? "ON": "OFF");
+            }
             log.info("Lightbulb state was set to: " + (this.lightbulbOn? "ON": "OFF"));
             callback();
         });
