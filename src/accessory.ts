@@ -127,6 +127,7 @@ class ExampleSwitch implements AccessoryPlugin {
         })
         .on(CharacteristicEventTypes.SET, (value: CharacteristicValue, callback: CharacteristicSetCallback) => {
             this.lightbulbOn = value as boolean;
+            this.mqttClient.publish(this.config.topics.setOn, this.lightbulbOn? "ON": "OFF");
             log.info("Lightbulb state was set to: " + (this.lightbulbOn? "ON": "OFF"));
             callback();
         });
