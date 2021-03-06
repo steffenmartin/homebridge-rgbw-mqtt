@@ -93,8 +93,8 @@ class ExampleSwitch implements AccessoryPlugin {
 
             if (topic == that.config.topics.getOn) {
                 var status = message.toString();
-                that.switchOn = (status == "ON" ? true : false);
-                that.switchService.getCharacteristic(hap.Characteristic.On).setValue(that.switchOn, undefined, 'fromSetValue');
+                that.lightbulbOn = (status == "ON" ? true : false);
+                that.lightbulbService.getCharacteristic(hap.Characteristic.On).setValue(that.lightbulbOn, undefined, 'fromSetValue');
             }
         });
         
