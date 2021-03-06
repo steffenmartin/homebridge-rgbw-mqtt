@@ -56,12 +56,10 @@ class ExampleSwitch implements AccessoryPlugin {
     private readonly mqttClient: Client;
     private readonly mqttURL: string;
     private readonly mqttClientID: string;
-    private switchOn = false;
     private lightbulbOn = false;
     private lightbulbBrightness = 0;
     private lightbulbColorTemp = 153;
 
-    private readonly switchService: Service;
     private readonly informationService: Service;
     private readonly lightbulbService: Service;
 
@@ -94,25 +92,13 @@ class ExampleSwitch implements AccessoryPlugin {
             if (topic == that.config.topics.getOn) {
                 var status = message.toString();
                 that.lightbulbOn = (status == "ON" ? true : false);
-                that.lightbulbService.getCharacteristic(hap.Characteristic.On).setValue(that.lightbulbOn, undefined, 'fromSetValue');
+                // that.lightbulbService.getCharacteristic(hap.Characteristic.On).setValue(that.lightbulbOn, undefined, 'fromSetValue');
             }
         });
         
         log.info("Subscribing to topic " + this.config.topics.getOn );
 
         this.mqttClient.subscribe(this.config.topics.getOn);
-
-        this.switchService = new hap.Service.Switch(this.name);
-        this.switchService.getCharacteristic(hap.Characteristic.On)
-        .on(CharacteristicEventTypes.GET, (callback: CharacteristicGetCallback) => {
-            log.info("Current state of the switch was returned: " + (this.switchOn? "ON": "OFF"));
-            callback(undefined, this.switchOn);
-        })
-        .on(CharacteristicEventTypes.SET, (value: CharacteristicValue, callback: CharacteristicSetCallback) => {
-            this.switchOn = value as boolean;
-            log.info("Switch state was set to: " + (this.switchOn? "ON": "OFF"));
-            callback();
-        });
 
         // Adding lightbulb service
 
@@ -162,7 +148,7 @@ class ExampleSwitch implements AccessoryPlugin {
         .setCharacteristic(hap.Characteristic.Manufacturer, "Custom Manufacturer")
         .setCharacteristic(hap.Characteristic.Model, "Custom Model");
 
-        log.info("Switch finished initializing!");
+        log.info("Finished initializing!");
     }
 
     /*
