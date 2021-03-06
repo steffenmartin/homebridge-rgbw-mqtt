@@ -89,10 +89,19 @@ class ExampleSwitch implements AccessoryPlugin {
 
             that.log.info(message.toString(), topic);
 
+            // On/Off
+
             if (topic == that.config.topics.getOn) {
                 var status = message.toString();
                 that.lightbulbOn = (status == "ON" ? true : false);
                 that.lightbulbService.getCharacteristic(hap.Characteristic.On).setValue(that.lightbulbOn, undefined, 'fromSetValue');
+            }
+
+            // Color temperature
+
+            if (topic == that.config.topics.getColorTemp) {
+                that.lightbulbColorTemp = JSON.parse(message).CT as number;;
+                that.lightbulbService.getCharacteristic(hap.Characteristic.ColorTemperature).setValue(that.lightbulbColorTemp, undefined, 'fromSetValue');
             }
         });
         
@@ -141,7 +150,10 @@ class ExampleSwitch implements AccessoryPlugin {
             callback(undefined, this.lightbulbColorTemp);
         })
         .on(CharacteristicEventTypes.SET, (value: CharacteristicValue, callback: CharacteristicSetCallback) => {
-            this.lightbulbColorTemp = value as number;
+            if(context !== 'fromSetValue') {
+                this.lightbulbColorTemp = value as number;
+                this.mqttClient.publish(this.config.topics.setColorTemp, this.lightbulbColorTemp);
+            }
             log.info("Lightbulb color temperature was set to: " + this.lightbulbColorTemp);
             callback();
         });
