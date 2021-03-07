@@ -60,6 +60,7 @@ class ExampleSwitch implements AccessoryPlugin {
     private lightbulbBrightness = 0;
     private lightbulbColorTemp = 153;
     private lightbulbHue = 0;
+    private lightbulbSat = 0;
 
     private readonly informationService: Service;
     private readonly lightbulbService: Service;
@@ -122,6 +123,14 @@ class ExampleSwitch implements AccessoryPlugin {
                 {
                     that.lightbulbHue = JSON.parse(message.toString()).HSBColor.toString().split(',')[0] as number;
                     that.lightbulbService.getCharacteristic(hap.Characteristic.Hue).setValue(that.lightbulbHue, undefined, 'fromSetValue');
+                }
+
+                // Saturation
+
+                if (JSON.parse(message.toString()).HSBColor != null)
+                {
+                    that.lightbulbSat = JSON.parse(message.toString()).HSBColor.toString().split(',')[1] as number;
+                    that.lightbulbService.getCharacteristic(hap.Characteristic.Saturation).setValue(that.lightbulbSat, undefined, 'fromSetValue');
                 }
             }
         });
@@ -196,6 +205,22 @@ class ExampleSwitch implements AccessoryPlugin {
                 this.mqttClient.publish(this.config.topics.setHue, this.lightbulbHue.toString());
             }
             log.info("Lightbulb hue was set to: " + this.lightbulbHue);
+            callback();
+        });
+
+        // Lightbulb saturation callbacks
+
+        this.lightbulbService.getCharacteristic(hap.Characteristic.Saturation)
+        .on(CharacteristicEventTypes.GET, (callback: CharacteristicGetCallback) => {
+            log.info("Current saturation of the lightbulb was returned: " + this.lightbulbSat);
+            callback(undefined, this.lightbulbSat);
+        })
+        .on(CharacteristicEventTypes.SET, (value: CharacteristicValue, callback: CharacteristicSetCallback, context: string) => {
+            if(context !== 'fromSetValue') {
+                this.lightbulbSat = value as number;
+                this.mqttClient.publish(this.config.topics.setSat, this.lightbulbSat.toString());
+            }
+            log.info("Lightbulb saturation was set to: " + this.lightbulbSat);
             callback();
         });
 
