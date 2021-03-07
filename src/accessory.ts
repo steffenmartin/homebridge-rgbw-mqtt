@@ -105,8 +105,15 @@ class ExampleSwitch implements AccessoryPlugin {
                 
                 if (JSON.parse(message.toString()).Dimmer != null)
                 {
-                    that.lightbulbBrightness = JSON.parse(message.toString()).Dimmer as number;
-                    that.lightbulbService.getCharacteristic(hap.Characteristic.Brightness).setValue(that.lightbulbBrightness, undefined, 'fromSetValue');
+                    var newB = JSON.parse(message.toString()).Dimmer as number;
+
+                    // Only take further action if there was an actual (value) change (since a lot of data is 'crammed' into this MQTT message and not everything changes)
+
+                    if (newB != that.lightbulbBrightness)
+                    {
+                        that.lightbulbBrightness = newB;
+                        that.lightbulbService.getCharacteristic(hap.Characteristic.Brightness).setValue(that.lightbulbBrightness, undefined, 'fromSetValue');
+                    }
                 }
 
                 // Color temperature
