@@ -104,7 +104,7 @@ class ExampleSwitch implements AccessoryPlugin {
                 if (JSON.parse(message.toString()).Dimmer != null)
                 {
                     that.lightbulbBrightness = JSON.parse(message.toString()).Dimmer as number;
-                    that.lightbulbService.getCharacteristic(hap.Characteristic.ColorTemperature).setValue(that.lightbulbBrightness, undefined, 'fromSetValue');
+                    that.lightbulbService.getCharacteristic(hap.Characteristic.Brightness).setValue(that.lightbulbBrightness, undefined, 'fromSetValue');
                 }
 
                 // Color temperature
