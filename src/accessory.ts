@@ -120,7 +120,7 @@ class ExampleSwitch implements AccessoryPlugin {
 
                 if (JSON.parse(message.toString()).HSBColor != null)
                 {
-                    that.lightbulbHue = JSON.parse(message.toString()).HSBColor.toString().split(',')[2] as number;
+                    that.lightbulbHue = JSON.parse(message.toString()).HSBColor.toString().split(',')[0] as number;
                     that.lightbulbService.getCharacteristic(hap.Characteristic.Hue).setValue(that.lightbulbHue, undefined, 'fromSetValue');
                 }
             }
@@ -193,7 +193,7 @@ class ExampleSwitch implements AccessoryPlugin {
         .on(CharacteristicEventTypes.SET, (value: CharacteristicValue, callback: CharacteristicSetCallback, context: string) => {
             if(context !== 'fromSetValue') {
                 this.lightbulbHue = value as number;
-                this.mqttClient.publish(this.config.topics.setColorTemp, this.lightbulbHue.toString());
+                this.mqttClient.publish(this.config.topics.setHue, this.lightbulbHue.toString());
             }
             log.info("Lightbulb hue was set to: " + this.lightbulbHue);
             callback();
