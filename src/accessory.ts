@@ -100,7 +100,7 @@ class ExampleSwitch implements AccessoryPlugin {
             // Color temperature
 
             if (topic == that.config.topics.getColorTemp) {
-                that.lightbulbColorTemp = JSON.parse(message).CT as number;;
+                that.lightbulbColorTemp = JSON.parse(message.toString()).CT as number;
                 that.lightbulbService.getCharacteristic(hap.Characteristic.ColorTemperature).setValue(that.lightbulbColorTemp, undefined, 'fromSetValue');
             }
         });
@@ -149,10 +149,10 @@ class ExampleSwitch implements AccessoryPlugin {
             log.info("Current color temperature of the lightbulb was returned: " + this.lightbulbColorTemp);
             callback(undefined, this.lightbulbColorTemp);
         })
-        .on(CharacteristicEventTypes.SET, (value: CharacteristicValue, callback: CharacteristicSetCallback) => {
+        .on(CharacteristicEventTypes.SET, (value: CharacteristicValue, callback: CharacteristicSetCallback, context: string) => {
             if(context !== 'fromSetValue') {
                 this.lightbulbColorTemp = value as number;
-                this.mqttClient.publish(this.config.topics.setColorTemp, this.lightbulbColorTemp);
+                this.mqttClient.publish(this.config.topics.setColorTemp, this.lightbulbColorTemp.toString());
             }
             log.info("Lightbulb color temperature was set to: " + this.lightbulbColorTemp);
             callback();
