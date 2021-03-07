@@ -99,7 +99,7 @@ class ExampleSwitch implements AccessoryPlugin {
 
             // Color temperature
 
-            if (topic == that.config.topics.getColorTemp) {
+            if (topic == that.config.topics.getRes) {
                 that.lightbulbColorTemp = JSON.parse(message.toString()).CT as number;
                 that.lightbulbService.getCharacteristic(hap.Characteristic.ColorTemperature).setValue(that.lightbulbColorTemp, undefined, 'fromSetValue');
             }
@@ -108,6 +108,7 @@ class ExampleSwitch implements AccessoryPlugin {
         log.info("Subscribing to topic " + this.config.topics.getOn );
 
         this.mqttClient.subscribe(this.config.topics.getOn);
+        this.mqttClient.subscribe(this.config.topics.getRes);
 
         // Adding lightbulb service
 
