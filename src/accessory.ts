@@ -75,7 +75,6 @@ class ExampleSwitch implements AccessoryPlugin {
             'mqttjs_' +
             config.name + "_" +
             Math.random().toString(16).substr(2, 8);
-        this.mqttResLast = '{}';
 
         // connect to MQTT broker
 
