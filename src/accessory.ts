@@ -97,9 +97,18 @@ class ExampleSwitch implements AccessoryPlugin {
                 that.lightbulbService.getCharacteristic(hap.Characteristic.On).setValue(that.lightbulbOn, undefined, 'fromSetValue');
             }
 
-            // Color temperature
-
             if (topic == that.config.topics.getRes) {
+
+                // Brightness
+                
+                if (JSON.parse(message.toString()).Dimmer != null)
+                {
+                    that.lightbulbBrightness = JSON.parse(message.toString()).Dimmer as number;
+                    that.lightbulbService.getCharacteristic(hap.Characteristic.ColorTemperature).setValue(that.lightbulbBrightness, undefined, 'fromSetValue');
+                }
+
+                // Color temperature
+
                 if (JSON.parse(message.toString()).CT != null)
                 {
                     that.lightbulbColorTemp = JSON.parse(message.toString()).CT as number;
@@ -140,8 +149,11 @@ class ExampleSwitch implements AccessoryPlugin {
             log.info("Current brightness of the lightbulb was returned: " + this.lightbulbBrightness);
             callback(undefined, this.lightbulbBrightness);
         })
-        .on(CharacteristicEventTypes.SET, (value: CharacteristicValue, callback: CharacteristicSetCallback) => {
-            this.lightbulbBrightness = value as number;
+        .on(CharacteristicEventTypes.SET, (value: CharacteristicValue, callback: CharacteristicSetCallback, context: string) => {
+            if(context !== 'fromSetValue') {
+                this.lightbulbBrightness = value as number;
+                this.mqttClient.publish(this.config.topics.setBrightness, this.lightbulbBrightness.toString());
+            }
             log.info("Lightbulb brightness was set to: " + this.lightbulbBrightness);
             callback();
         });
