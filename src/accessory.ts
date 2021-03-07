@@ -75,6 +75,7 @@ class ExampleSwitch implements AccessoryPlugin {
             'mqttjs_' +
             config.name + "_" +
             Math.random().toString(16).substr(2, 8);
+        this.mqttResLast = '{}';
 
         // connect to MQTT broker
 
@@ -113,24 +114,45 @@ class ExampleSwitch implements AccessoryPlugin {
 
                 if (JSON.parse(message.toString()).CT != null)
                 {
-                    that.lightbulbColorTemp = JSON.parse(message.toString()).CT as number;
-                    that.lightbulbService.getCharacteristic(hap.Characteristic.ColorTemperature).setValue(that.lightbulbColorTemp, undefined, 'fromSetValue');
+                    var newCT = JSON.parse(message.toString()).CT as number;
+
+                    // Only take further action if there was an actual (value) change (since a lot of data is 'crammed' into this MQTT message and not everything changes)
+
+                    if (newCT != that.lightbulbColorTemp)
+                    {
+                        that.lightbulbColorTemp = newCT;
+                        that.lightbulbService.getCharacteristic(hap.Characteristic.ColorTemperature).setValue(that.lightbulbColorTemp, undefined, 'fromSetValue');
+                    }
                 }
 
                 // Hue
 
                 if (JSON.parse(message.toString()).HSBColor != null)
                 {
-                    that.lightbulbHue = JSON.parse(message.toString()).HSBColor.toString().split(',')[0] as number;
-                    that.lightbulbService.getCharacteristic(hap.Characteristic.Hue).setValue(that.lightbulbHue, undefined, 'fromSetValue');
+                    var newHue = JSON.parse(message.toString()).HSBColor.toString().split(',')[0] as number;
+
+                    // Only take further action if there was an actual (value) change (since a lot of data is 'crammed' into this MQTT message and not everything changes)
+
+                    if (newHue != that.lightbulbHue)
+                    {
+                        that.lightbulbHue = newHue;
+                        that.lightbulbService.getCharacteristic(hap.Characteristic.Hue).setValue(that.lightbulbHue, undefined, 'fromSetValue');
+                    }
                 }
 
                 // Saturation
 
                 if (JSON.parse(message.toString()).HSBColor != null)
                 {
-                    that.lightbulbSat = JSON.parse(message.toString()).HSBColor.toString().split(',')[1] as number;
-                    that.lightbulbService.getCharacteristic(hap.Characteristic.Saturation).setValue(that.lightbulbSat, undefined, 'fromSetValue');
+                    var newSat = JSON.parse(message.toString()).HSBColor.toString().split(',')[1] as number;
+
+                    // Only take further action if there was an actual (value) change (since a lot of data is 'crammed' into this MQTT message and not everything changes)
+
+                    if (newSat != that.lightbulbSat)
+                    {
+                        that.lightbulbSat = newSat;
+                        that.lightbulbService.getCharacteristic(hap.Characteristic.Saturation).setValue(that.lightbulbSat, undefined, 'fromSetValue');
+                    }
                 }
             }
         });
