@@ -59,6 +59,7 @@ class ExampleSwitch implements AccessoryPlugin {
     private lightbulbOn = false;
     private lightbulbBrightness = 0;
     private lightbulbColorTemp = 153;
+    private lightbulbHue = 0;
 
     private readonly informationService: Service;
     private readonly lightbulbService: Service;
@@ -113,6 +114,14 @@ class ExampleSwitch implements AccessoryPlugin {
                 {
                     that.lightbulbColorTemp = JSON.parse(message.toString()).CT as number;
                     that.lightbulbService.getCharacteristic(hap.Characteristic.ColorTemperature).setValue(that.lightbulbColorTemp, undefined, 'fromSetValue');
+                }
+
+                // Hue
+
+                if (JSON.parse(message.toString()).HSBColor != null)
+                {
+                    that.lightbulbHue = JSON.parse(message.toString()).HSBColor.toString().split(',')[2] as number;
+                    that.lightbulbService.getCharacteristic(hap.Characteristic.Hue).setValue(that.lightbulbHue, undefined, 'fromSetValue');
                 }
             }
         });
@@ -171,6 +180,22 @@ class ExampleSwitch implements AccessoryPlugin {
                 this.mqttClient.publish(this.config.topics.setColorTemp, this.lightbulbColorTemp.toString());
             }
             log.info("Lightbulb color temperature was set to: " + this.lightbulbColorTemp);
+            callback();
+        });
+
+        // Lightbulb hue callbacks
+
+        this.lightbulbService.getCharacteristic(hap.Characteristic.Hue)
+        .on(CharacteristicEventTypes.GET, (callback: CharacteristicGetCallback) => {
+            log.info("Current hue of the lightbulb was returned: " + this.lightbulbHue);
+            callback(undefined, this.lightbulbHue);
+        })
+        .on(CharacteristicEventTypes.SET, (value: CharacteristicValue, callback: CharacteristicSetCallback, context: string) => {
+            if(context !== 'fromSetValue') {
+                this.lightbulbHue = value as number;
+                this.mqttClient.publish(this.config.topics.setColorTemp, this.lightbulbHue.toString());
+            }
+            log.info("Lightbulb hue was set to: " + this.lightbulbHue);
             callback();
         });
 
