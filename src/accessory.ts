@@ -100,8 +100,11 @@ class ExampleSwitch implements AccessoryPlugin {
             // Color temperature
 
             if (topic == that.config.topics.getRes) {
-                that.lightbulbColorTemp = JSON.parse(message.toString()).CT as number;
-                that.lightbulbService.getCharacteristic(hap.Characteristic.ColorTemperature).setValue(that.lightbulbColorTemp, undefined, 'fromSetValue');
+                if (JSON.parse(message.toString()).CT != null)
+                {
+                    that.lightbulbColorTemp = JSON.parse(message.toString()).CT as number;
+                    that.lightbulbService.getCharacteristic(hap.Characteristic.ColorTemperature).setValue(that.lightbulbColorTemp, undefined, 'fromSetValue');
+                }
             }
         });
         
