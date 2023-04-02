@@ -1,7 +1,7 @@
 {
     "displayName": "Homebridge RGBW MQTT",
     "name": "homebridge-rgbw-mqtt",
-    "version": "0.0.1",
+    "version": "0.0.2",
     "description": "Plugin to HomeBridge supporting RGBW (smart) light bulbs via MQTT",
     "main": "dist/accessory.js",
     "scripts": {

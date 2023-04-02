@@ -76,12 +76,17 @@ class ExampleSwitch implements AccessoryPlugin {
             config.name + "_" +
             Math.random().toString(16).substr(2, 8);
 
+        var mqttOptions = {
+            username: config.username,
+            password: config.password
+        };
+
         // connect to MQTT broker
 
         log.info("Initializing MQTT");
         log.info("Connecting to " + this.mqttURL);
 
-        this.mqttClient = connect(this.mqttURL);
+        this.mqttClient = connect(this.mqttURL, mqttOptions);
         var that = this;
         this.mqttClient.on('error', function (err) {
             that.log.error('Error event on MQTT:', err);
